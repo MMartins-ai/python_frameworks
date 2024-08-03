@@ -1,1 +1,3 @@
 pyspark==3.5.1
+numpy==2.0.1
+distutils-pytest==0.2.1
