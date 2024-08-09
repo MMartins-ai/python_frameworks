@@ -1,15 +1,17 @@
-from langchain.schema.messages import HumanMessage, SystemMessage
-from chatbot import chat_model
+from chatbot import review_chain
 
-messages = [
-    SystemMessage(
-        content=  """You are an assistant knowledgeable about
-        healthcare. Only answer healthcare-related questions."""
-    ),
-    HumanMessage(content="What is Medicaid managed care?")
-]
+context = "I had a great Stay"
+question = "Did anyone have a positive experience?"
 
+resposta =review_chain.invoke({
+    "context": context,
+    "question": question
+})
+
+print(resposta)
 #resposta = chat_model.invoke(messages)
+"""
 resposta = chat_model.stream(messages)
 for s in resposta:
     print(s.content, end="", flush=True)
+"""
