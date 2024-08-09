@@ -1,3 +1,8 @@
 pyspark==3.5.1
-numpy==2.0.1
+numpy==1.26.4
 distutils-pytest==0.2.1
+langchain==0.2.12
+openai==1.40.2
+langchain-openai==0.1.20
+langchain-community==0.2.11
+langchainhub==0.1.20
