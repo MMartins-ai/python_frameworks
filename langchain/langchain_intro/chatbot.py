@@ -7,8 +7,28 @@ from langchain.prompts import (
     ChatPromptTemplate
 )
 from langchain_core.output_parsers import StrOutputParser
+from langchain_chroma import Chroma
+from langchain_openai import OpenAIEmbeddings
+from langchain.schema.runnable import RunnablePassthrough
+from langchain.agents import (
+    create_openai_functions_agent,
+    Tool,
+    AgentExecutor
+)
+from langchain import hub
+from tools import get_current_wait_time
+from args_shcema import arg_schema_waits, arg_schema_review
 
 dotenv.load_dotenv('../.env')
+
+REVIEWS_CHROMA_PATH = "chroma_data/"
+
+reviews_vector_db = Chroma(
+    persist_directory=REVIEWS_CHROMA_PATH,
+    embedding_function=OpenAIEmbeddings()
+)
+
+reviews_retriever  = reviews_vector_db.as_retriever(k=10)
 
 review_template_str = """Your job is to use patient
 reviews to answer questions about their experience at a hospital.
@@ -42,4 +62,61 @@ chat_model = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
 
 output_parser = StrOutputParser()
 
-review_chain = review_prompt_template | chat_model | output_parser
+review_chain = (
+    {"context": reviews_retriever, "question": RunnablePassthrough()}
+    | review_prompt_template 
+    | chat_model 
+    | output_parser
+)
+
+tools = [
+    Tool(
+        name="Reviews",
+        func=review_chain.invoke,
+        description="""Useful when you need to answer questions
+        about patient reviews or experiences at the hospital.
+        Not useful for answering questions about specific visit
+        details such as payer, billing, treatment, diagnosis,
+        chief complaint, hospital, or physician information.
+        Pass the entire question as input to the tool. For instance,
+        if the question is "What do patients think about the triage system?",
+        the input should be "What do patients think about the triage system?"
+        """,
+        args_schema = arg_schema_review
+    ),
+    Tool(
+        name="Waits",
+        func=get_current_wait_time,
+        description="""Use when asked about current wait times
+        at a specific hospital. This tool can only get the current
+        wait time at a hospital and does not have any information about
+        aggregate or historical wait times. This tool returns wait times in
+        minutes. Do not pass the word "hospital" as input,
+        only the hospital name itself. For instance, if the question is
+        "What is the wait time at hospital A?", the input should be "A".
+        """,
+        args_schema = arg_schema_waits
+    )
+]
+
+hospital_agent_prompt = ChatPromptTemplate.from_messages([
+  ("system", "You are a helpful assistant"),
+  ("placeholder", "{chat_history}"),
+  ("human", "{input}"),
+  ("placeholder", "{agent_scratchpad}"),
+])
+
+agent_chat_model = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+
+hospital_agent = create_openai_functions_agent(
+    llm=agent_chat_model,
+    prompt=hospital_agent_prompt,
+    tools=tools
+)
+
+hospital_agent_executor = AgentExecutor(
+    agent=hospital_agent,
+    tools=tools,
+    return_intermediate_steps=True,
+    verbose=True
+)

@@ -1,17 +1,16 @@
 from chatbot import review_chain
+from chatbot import hospital_agent_executor
+#question = """Has anyone complained about
+ #           communication with the hospital staff?"""
 
-context = "I had a great Stay"
-question = "Did anyone have a positive experience?"
+#resposta =review_chain.invoke(question)
 
-resposta =review_chain.invoke({
-    "context": context,
-    "question": question
-})
-
-print(resposta)
+#print(resposta)
 #resposta = chat_model.invoke(messages)
 """
 resposta = chat_model.stream(messages)
 for s in resposta:
     print(s.content, end="", flush=True)
 """
+
+hospital_agent_executor.invoke({"input": "What have patients said about their comfort at the hospital?"})
