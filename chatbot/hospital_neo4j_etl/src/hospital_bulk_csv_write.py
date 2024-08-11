@@ -56,6 +56,7 @@ def load_hospital_graph_from_csv() -> None:
                             name: hospitals.hospital_name,
                             state_name: hospitals.hospital_state}});
         """
+        _ = session.run(query, {})
 
     LOGGER.info("Loading payer nodes")
     with driver.session(database="neo4j") as session:
