@@ -2,6 +2,9 @@ import os
 import logging
 from retry import retry
 from neo4j import GraphDatabase
+import dotenv
+
+dotenv.load_dotenv()
 
 HOSPITALS_CSV_PATH = os.getenv("HOSPITALS_CSV_PATH")
 PAYERS_CSV_PATH = os.getenv("PAYERS_CSV_PATH")
