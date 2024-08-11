@@ -12,6 +12,13 @@ from tools.wait_times import (
     get_current_wait_times,
     get_most_available_hospital,
 )
+from agents.args_schema_tools import (
+    schema_reviews_vector_chain, 
+    schema_hospital_cypher_chain,
+    schema_get_current_wait_times,
+    schema_generico
+)
+
 
 HOSPITAL_AGENT_MODEL = os.getenv("HOSPITAL_AGENT_MODEL")
 
@@ -35,6 +42,7 @@ tools = [
         "Are patients satisfied with their care?", the input should be
         "Are patients satisfied with their care?".
         """,
+        args_schema = schema_reviews_vector_chain
     ),
     Tool(
         name="Graph",
@@ -46,6 +54,7 @@ tools = [
         have there been?", the input should be "How many visits have
         there been?".
         """,
+        args_schema = schema_hospital_cypher_chain
     ),
     Tool(
         name='Waits',
@@ -58,6 +67,7 @@ tools = [
         is "What is the current wait time at Jordan Inc Hospital?", the
         input should be "Jordan Inc".
         """,
+        args_schema = schema_get_current_wait_times
     ),
     Tool(
         name="Availability",
@@ -68,6 +78,7 @@ tools = [
         or historical wait times. This tool returns a dictionary with the
         hospital name as the key and the wait time in minutes as the value.
         """,
+        args_schema = schema_generico
     ),
 ]
 

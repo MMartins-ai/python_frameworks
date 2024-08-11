@@ -2,3 +2,4 @@
 .env
 chroma_data
 teste.py
+__pycache__
