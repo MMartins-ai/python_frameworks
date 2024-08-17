@@ -1,4 +1,5 @@
 import os
+import dotenv
 from langchain_openai import ChatOpenAI
 from langchain.agents import (
     AgentExecutor,
@@ -18,6 +19,8 @@ from agents.args_schema_tools import (
     schema_get_current_wait_times,
     schema_generico
 )
+
+dotenv.load_dotenv()
 
 
 HOSPITAL_AGENT_MODEL = os.getenv("HOSPITAL_AGENT_MODEL")

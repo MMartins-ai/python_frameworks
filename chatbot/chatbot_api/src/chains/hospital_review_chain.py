@@ -1,5 +1,6 @@
 import os
-from langchain.vectorstores.neo4j_vector import Neo4jVector
+import dotenv
+from langchain_community.vectorstores import Neo4jVector
 from langchain_openai import OpenAIEmbeddings
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
@@ -11,6 +12,7 @@ from langchain.prompts import (
     PromptTemplate
 )
 
+dotenv.load_dotenv()
 HOSPITAL_QA_MODEL = os.getenv("HOSPITAL_QA_MODEL")
 
 neo4j_vector_index = Neo4jVector.from_existing_graph(

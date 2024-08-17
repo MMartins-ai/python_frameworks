@@ -1,10 +1,14 @@
 import os
+import dotenv
 from langchain_community.graphs import Neo4jGraph
 from langchain.chains import GraphCypherQAChain
 from langchain_openai import ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain_core.runnables import RunnablePassthrough, RunnableParallel
 from langchain_core.output_parsers import StrOutputParser
+
+
+dotenv.load_dotenv()
 
 
 HOSPITAL_QA_MODEL = os.getenv("HOSPITAL_QA_MODEL")
